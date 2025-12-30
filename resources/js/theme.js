@@ -25,7 +25,23 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Call the layout_change function to apply the stored theme if it exists
     if (savedTheme) {
-      layout_change(savedTheme);
+      // If theme is 'default', use system preference, otherwise use saved theme
+      if (savedTheme === 'default') {
+        // Apply default theme without calling layout_change_default to avoid duplicate event listeners
+        let dark_layout = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        layout_change(dark_layout, true); // Don't save, preserve 'default' in localStorage
+        const btn_control = document.querySelector('.theme-layout .btn[data-value="default"]');
+        if (btn_control) {
+          btn_control.classList.add('active');
+        }
+        // Listen for changes in the user's color scheme preference
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (event) => {
+          dark_layout = event.matches ? 'dark' : 'light';
+          layout_change(dark_layout, true);
+        });
+      } else {
+        layout_change(savedTheme);
+      }
     }
   } else {
     console.warn('Web Storage API is not supported in this browser.');
@@ -34,11 +50,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
 // Function to change layout dark/light settings
 function layout_change_default() {
+  // Save 'default' to localStorage to indicate auto mode
+  if (typeof Storage !== 'undefined') {
+    localStorage.setItem('theme', 'default');
+  }
+
   // Determine initial layout based on user's color scheme preference
   let dark_layout = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 
-  // Apply the determined layout
-  layout_change(dark_layout);
+  // Apply the determined layout without saving (to preserve 'default' in localStorage)
+  layout_change(dark_layout, true);
 
   // Set the active state for the default layout button
   const btn_control = document.querySelector('.theme-layout .btn[data-value="default"]');
@@ -49,7 +70,7 @@ function layout_change_default() {
   // Listen for changes in the user's color scheme preference and adjust layout accordingly
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (event) => {
     dark_layout = event.matches ? 'dark' : 'light';
-    layout_change(dark_layout);
+    layout_change(dark_layout, true); // Don't save when in default mode
   });
 }
 
@@ -106,7 +127,7 @@ document.addEventListener('DOMContentLoaded', function () {
     layout_reset.addEventListener('click', function (e) {
       localStorage.clear();
       location.reload();
-      localStorage.setItem('layout', 'vertical');
+      localStorage.setItem('layout', 'color-header');
     });
   }
 });
@@ -199,7 +220,12 @@ function layout_rtl_change(value) {
 }
 
 // Function to handle layout change (dark/light) and update related elements
-function layout_change(layout) {
+function layout_change(layout, skipSave) {
+  // Save the theme preference to localStorage for persistence (unless skipSave is true)
+  if (typeof Storage !== 'undefined' && !skipSave) {
+    localStorage.setItem('theme', layout);
+  }
+
   // Set the layout theme attribute on the body element
   document.getElementsByTagName('body')[0].setAttribute('data-pc-theme', layout);
 

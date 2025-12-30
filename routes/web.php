@@ -40,6 +40,8 @@ Route::middleware(['auth'])->group(function () {
 
     // Tasks routes
     Route::resource('tasks', TaskController::class);
+    Route::post('tasks/{task}/accept', [TaskController::class, 'accept'])->name('tasks.accept');
+    Route::post('tasks/{task}/completed', [TaskController::class, 'completed'])->name('tasks.completed');
 
     // Onboarding routes
     Route::prefix('onboarding')->name('onboarding.')->group(function () {
@@ -55,11 +57,24 @@ Route::middleware(['auth'])->group(function () {
     // Who's Who route
     Route::get('whoswho', [WhoIsWhoController::class, 'index'])->name('whoswho.index');
 
-    // Noticeboard route
+    // Noticeboard routes
     Route::get('noticeboard', [NoticeboardController::class, 'index'])->name('noticeboard.index');
+    Route::get('noticeboard/create', [NoticeboardController::class, 'create'])->name('noticeboard.create');
+    Route::post('noticeboard', [NoticeboardController::class, 'store'])->name('noticeboard.store');
+    Route::get('noticeboard/{notice}/edit', [NoticeboardController::class, 'edit'])->name('noticeboard.edit');
+    Route::put('noticeboard/{notice}', [NoticeboardController::class, 'update'])->name('noticeboard.update');
+    Route::delete('noticeboard/{notice}', [NoticeboardController::class, 'destroy'])->name('noticeboard.destroy');
 
-    // Q&A route
-    Route::get('qa', [QAController::class, 'index'])->name('qa.index');
+    // Q&A routes
+    Route::prefix('qa')->name('qa.')->group(function () {
+        Route::get('/', [QAController::class, 'index'])->name('index');
+        Route::get('create', [QAController::class, 'create'])->name('create');
+        Route::post('/', [QAController::class, 'store'])->name('store');
+        Route::get('{question}', [QAController::class, 'show'])->name('show');
+        Route::get('{question}/edit', [QAController::class, 'edit'])->name('edit');
+        Route::put('{question}', [QAController::class, 'update'])->name('update');
+        Route::delete('{question}', [QAController::class, 'destroy'])->name('destroy');
+    });
 
     // Template pages route disabled - uncomment below to enable template demo pages
     // Route::get('{routeName}/{name?}', [HomeController::class, 'pageView']);

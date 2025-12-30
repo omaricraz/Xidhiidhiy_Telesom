@@ -42,9 +42,13 @@
                         <td>
                           <div class="d-flex align-items-center">
                             <div class="flex-shrink-0">
-                              <span class="avtar avtar-s rounded-circle bg-light-primary">
-                                {{ $user->status_emoji ?? '👤' }}
-                              </span>
+                              @if($user->profile_image)
+                                <img src="{{ $user->profile_image }}" alt="{{ $user->full_name ?? $user->name }}" class="avtar avtar-s rounded-circle" style="object-fit: cover; width: 100%; height: 100%;" />
+                              @else
+                                <span class="avtar avtar-s rounded-circle bg-light-primary">
+                                  {{ $user->status_emoji ?? '👤' }}
+                                </span>
+                              @endif
                             </div>
                             <div class="flex-grow-1 ms-3">
                               <h6 class="mb-0">{{ $user->full_name ?? $user->name }}</h6>

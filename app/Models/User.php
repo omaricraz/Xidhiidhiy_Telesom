@@ -27,6 +27,7 @@ class User extends Authenticatable
         'team_id',
         'tech_stack',
         'status_emoji',
+        'profile_image',
     ];
 
     /**
@@ -82,6 +83,22 @@ class User extends Authenticatable
     public function learningProgress(): HasMany
     {
         return $this->hasMany(UserLearningProgress::class, 'user_id');
+    }
+
+    /**
+     * Get all questions created by this user.
+     */
+    public function createdQuestions(): HasMany
+    {
+        return $this->hasMany(Question::class, 'created_by');
+    }
+
+    /**
+     * Get all notices created by this user.
+     */
+    public function createdNotices(): HasMany
+    {
+        return $this->hasMany(Notice::class, 'created_by');
     }
 
     /**

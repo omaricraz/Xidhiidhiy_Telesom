@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\LearningGoal;
-use App\Models\Team;
 use App\Models\User;
 use App\Models\UserLearningProgress;
 use Illuminate\Http\Request;
@@ -25,15 +24,12 @@ class LearningGoalController extends Controller
         $user = Auth::user();
         $query = LearningGoal::with(['team', 'userProgress']);
 
-        // Apply scoped queries based on role
+        // Manager sees all learning goals (including old team-specific ones)
         if ($user->isManager()) {
-            // Manager sees all learning goals
             $goals = $query->latest()->get();
-        } elseif ($user->team_id) {
-            // Team Lead, Employee, Intern see goals from their team
-            $goals = $query->where('team_id', $user->team_id)->latest()->get();
         } else {
-            $goals = collect();
+            // Other users see only learning goals for all teams
+            $goals = $query->whereNull('team_id')->latest()->get();
         }
 
         // Get user progress for each goal
@@ -50,8 +46,7 @@ class LearningGoalController extends Controller
     public function create()
     {
         Gate::authorize('create', LearningGoal::class);
-        $teams = Team::all();
-        return view('onboarding.create', compact('teams'));
+        return view('onboarding.create');
     }
 
     /**
@@ -62,25 +57,26 @@ class LearningGoalController extends Controller
         Gate::authorize('create', LearningGoal::class);
 
         $validated = $request->validate([
-            'team_id' => 'required|exists:teams,id',
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'resource_url' => 'nullable|url',
         ]);
 
+        // Create learning goal for all teams (team_id is null)
+        $validated['team_id'] = null;
         $goal = LearningGoal::create($validated);
 
-        // Automatically create user_learning_progress entries for all team members
-        $teamMembers = User::where('team_id', $goal->team_id)->get();
-        foreach ($teamMembers as $member) {
+        // Automatically create user_learning_progress entries for ALL users
+        $allUsers = User::all();
+        foreach ($allUsers as $user) {
             UserLearningProgress::create([
-                'user_id' => $member->id,
+                'user_id' => $user->id,
                 'goal_id' => $goal->id,
                 'is_completed' => false,
             ]);
         }
 
-        return redirect()->route('onboarding.index')->with('success', 'Learning goal created successfully.');
+        return redirect()->route('onboarding.index')->with('success', 'Learning goal created successfully for all teams.');
     }
 
     /**
@@ -99,8 +95,7 @@ class LearningGoalController extends Controller
     public function edit(LearningGoal $learningGoal)
     {
         Gate::authorize('update', $learningGoal);
-        $teams = Team::all();
-        return view('onboarding.edit', compact('learningGoal', 'teams'));
+        return view('onboarding.edit', compact('learningGoal'));
     }
 
     /**
@@ -111,12 +106,13 @@ class LearningGoalController extends Controller
         Gate::authorize('update', $learningGoal);
 
         $validated = $request->validate([
-            'team_id' => 'required|exists:teams,id',
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'resource_url' => 'nullable|url',
         ]);
 
+        // Ensure team_id remains null (for all teams)
+        $validated['team_id'] = null;
         $learningGoal->update($validated);
 
         return redirect()->route('onboarding.index')->with('success', 'Learning goal updated successfully.');
@@ -139,6 +135,11 @@ class LearningGoalController extends Controller
     public function markCompleted(Request $request, LearningGoal $learningGoal)
     {
         $user = Auth::user();
+        
+        // Only employees and interns can mark goals as completed
+        if (!$user->isEmployee() && !$user->isIntern()) {
+            abort(403, 'Only employees and interns can mark learning goals as completed.');
+        }
         
         $progress = UserLearningProgress::firstOrCreate(
             [

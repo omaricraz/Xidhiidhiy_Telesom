@@ -20,20 +20,6 @@
                   <div class="row">
                     <div class="col-md-12">
                       <div class="mb-3">
-                        <label class="form-label">Team</label>
-                        <select class="form-select @error('team_id') is-invalid @enderror" name="team_id" required>
-                          <option value="">Select Team</option>
-                          @foreach($teams as $team)
-                            <option value="{{ $team->id }}" {{ old('team_id', $learningGoal->team_id) == $team->id ? 'selected' : '' }}>{{ $team->name }}</option>
-                          @endforeach
-                        </select>
-                        @error('team_id')
-                          <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                      </div>
-                    </div>
-                    <div class="col-md-12">
-                      <div class="mb-3">
                         <label class="form-label">Title</label>
                         <input type="text" class="form-control @error('title') is-invalid @enderror" name="title" value="{{ old('title', $learningGoal->title) }}" required>
                         @error('title')

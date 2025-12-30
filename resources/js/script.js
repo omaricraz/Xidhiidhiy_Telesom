@@ -255,10 +255,10 @@ function setLayout() {
     }
   }
 
-  // If no layout data found in localStorage, set default layout to 'vertical'
+  // If no layout data found in localStorage, set default layout to 'color-header'
   if (layout === null) {
-    main_layout_change('vertical');
-    localStorage.setItem('layout', 'vertical');
+    main_layout_change('color-header');
+    localStorage.setItem('layout', 'color-header');
   }
 }
 

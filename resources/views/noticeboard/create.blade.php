@@ -1,20 +1,20 @@
 @extends('layouts.master')
 
-@section('title', 'Create Learning Goal')
+@section('title', 'Create Notice')
 
 @section('content')
 
-<x-breadcrumb item="Onboarding" active="Create Learning Goal"/>
+<x-breadcrumb item="Noticeboard" active="Create"/>
 
         <!-- [ Main Content ] start -->
         <div class="row">
           <div class="col-12">
             <div class="card">
               <div class="card-header">
-                <h5>Create Learning Goal</h5>
+                <h5>Create New Notice</h5>
               </div>
               <div class="card-body">
-                <form action="{{ route('onboarding.store') }}" method="POST">
+                <form action="{{ route('noticeboard.store') }}" method="POST">
                   @csrf
                   <div class="row">
                     <div class="col-md-12">
@@ -28,26 +28,17 @@
                     </div>
                     <div class="col-md-12">
                       <div class="mb-3">
-                        <label class="form-label">Description</label>
-                        <textarea class="form-control @error('description') is-invalid @enderror" name="description" rows="4">{{ old('description') }}</textarea>
-                        @error('description')
-                          <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                      </div>
-                    </div>
-                    <div class="col-md-12">
-                      <div class="mb-3">
-                        <label class="form-label">Resource URL</label>
-                        <input type="url" class="form-control @error('resource_url') is-invalid @enderror" name="resource_url" value="{{ old('resource_url') }}" placeholder="https://example.com">
-                        @error('resource_url')
+                        <label class="form-label">Content</label>
+                        <textarea class="form-control @error('content') is-invalid @enderror" name="content" rows="6" required>{{ old('content') }}</textarea>
+                        @error('content')
                           <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                       </div>
                     </div>
                   </div>
                   <div class="text-end">
-                    <a href="{{ route('onboarding.index') }}" class="btn btn-secondary">Cancel</a>
-                    <button type="submit" class="btn btn-primary">Create Learning Goal</button>
+                    <a href="{{ route('noticeboard.index') }}" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Create Notice</button>
                   </div>
                 </form>
               </div>

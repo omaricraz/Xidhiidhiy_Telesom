@@ -18,7 +18,10 @@
 </div>
 @if (config('app.dark_layout') != "")
 <script>
-  layout_change("{{config('app.dark_layout')}}");
+  // Only apply config theme if no user preference is stored in localStorage
+  if (typeof Storage !== 'undefined' && !localStorage.getItem('theme')) {
+    layout_change("{{config('app.dark_layout')}}");
+  }
 </script>
 @endif
 @if (config('app.theme_contrast') != '')

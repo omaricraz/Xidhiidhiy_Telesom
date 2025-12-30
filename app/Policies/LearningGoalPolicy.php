@@ -20,6 +20,11 @@ class LearningGoalPolicy
      */
     public function view(User $user, LearningGoal $learningGoal): bool
     {
+        // All users can view learning goals that apply to all teams (team_id is null)
+        if ($learningGoal->team_id === null) {
+            return true;
+        }
+
         // Manager can view all
         if ($user->isManager()) {
             return true;
@@ -57,6 +62,11 @@ class LearningGoalPolicy
      */
     public function update(User $user, LearningGoal $learningGoal): bool
     {
+        // Only managers can update learning goals for all teams
+        if ($learningGoal->team_id === null) {
+            return $user->isManager();
+        }
+
         // Manager can update all
         if ($user->isManager()) {
             return true;
@@ -75,6 +85,11 @@ class LearningGoalPolicy
      */
     public function delete(User $user, LearningGoal $learningGoal): bool
     {
+        // Only managers can delete learning goals for all teams
+        if ($learningGoal->team_id === null) {
+            return $user->isManager();
+        }
+
         // Manager can delete all
         if ($user->isManager()) {
             return true;

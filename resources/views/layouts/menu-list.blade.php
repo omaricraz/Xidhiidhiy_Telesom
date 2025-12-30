@@ -38,7 +38,7 @@
   <a href="{{ route('onboarding.index') }}" class="pc-link">
     <span class="pc-micon">
       <svg class="pc-icon">
-        <use xlink:href="#custom-graduation-cap"></use>
+        <use xlink:href="#custom-status-up"></use>
       </svg>
     </span>
     <span class="pc-mtext" data-i18n="Onboarding">Onboarding</span>
@@ -58,7 +58,7 @@
   <a href="{{ route('qa.index') }}" class="pc-link">
     <span class="pc-micon">
       <svg class="pc-icon">
-        <use xlink:href="#custom-help-circle"></use>
+        <use xlink:href="#custom-notification-status"></use>
       </svg>
     </span>
     <span class="pc-mtext" data-i18n="Q&A (Suaalo)">Q&A (Suaalo)</span>

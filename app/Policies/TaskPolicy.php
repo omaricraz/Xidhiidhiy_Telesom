@@ -44,7 +44,8 @@ class TaskPolicy
      */
     public function create(User $user): bool
     {
-        return true; // All authenticated users can create tasks
+        // Only Manager and Team Lead can create tasks
+        return $user->isManager() || $user->isTeamLead();
     }
 
     /**
@@ -62,13 +63,9 @@ class TaskPolicy
             return $task->assignee && $task->assignee->team_id === $user->team_id;
         }
 
-        // Intern can only update status of their own tasks
-        if ($user->isIntern()) {
-            return $task->assignee_id === $user->id;
-        }
-
-        // Employee can update their own tasks
-        return $task->assignee_id === $user->id || $task->creator_id === $user->id;
+        // Normal users (Employee and Intern) cannot edit tasks
+        // They can only accept/complete tasks through dedicated actions
+        return false;
     }
 
     /**

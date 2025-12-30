@@ -14,70 +14,147 @@
         <div class="row">
           <!-- [ sample-page ] start -->
           <div class="col-sm-12">
-            <div class="card table-card">
-              <div class="card-body">
-                <div class="table-responsive">
-                  <table class="table table-hover" id="pc-dt-simple">
-                    <thead>
-                      <tr>
-                        <th>#</th>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Role</th>
-                        <th>Team</th>
-                        <th>Status</th>
-                        <th>Tech Stack</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      @foreach($users as $user)
-                      <tr>
-                        <td>{{ $user->id }}</td>
-                        <td>
-                          <div class="row">
-                            <div class="col-auto">
-                              <span class="avtar avtar-s rounded-circle bg-light-primary">
-                                {{ $user->status_emoji ?? '👤' }}
-                              </span>
-                            </div>
-                            <div class="col">
-                              <h6 class="mb-0">{{ $user->full_name ?? $user->name }}</h6>
-                              <p class="text-muted f-12 mb-0">{{ $user->email }}</p>
-                            </div>
-                          </div>
-                        </td>
-                        <td>{{ $user->email }}</td>
-                        <td><span class="badge bg-light-{{ $user->role === 'Manager' ? 'danger' : ($user->role === 'Team_Lead' ? 'warning' : 'primary') }}">{{ $user->role }}</span></td>
-                        <td>{{ $user->team->name ?? 'N/A' }}</td>
-                        <td><span class="badge bg-light-success rounded-pill f-12">Active</span></td>
-                        <td>
-                          @if($user->tech_stack)
-                            @foreach(explode(',', $user->tech_stack) as $tech)
-                              <span class="badge bg-light-secondary me-1">{{ trim($tech) }}</span>
-                            @endforeach
+            @if($teamMembers->count() > 0)
+            <!-- Team Members Section -->
+            <div class="mb-4">
+              <h5 class="mb-3">
+                <span class="badge bg-light-primary me-2">{{ $teamMembers->count() }}</span>
+                My Team Members
+                @if($user->team)
+                  <small class="text-muted">({{ $user->team->name }})</small>
+                @endif
+              </h5>
+              <div class="row g-3">
+                @foreach($teamMembers as $member)
+                <div class="col-md-6 col-lg-4 col-xl-3">
+                  <div class="card h-100">
+                    <div class="card-body">
+                      <div class="d-flex align-items-center mb-3">
+                        <div class="flex-shrink-0">
+                          @if($member->profile_image)
+                            <img src="{{ $member->profile_image }}" alt="{{ $member->full_name ?? $member->name }}" class="avtar avtar-m rounded-circle" style="object-fit: cover; width: 100%; height: 100%;" />
                           @else
-                            N/A
+                            <span class="avtar avtar-m rounded-circle bg-light-primary">
+                              {{ $member->status_emoji ?? '👤' }}
+                            </span>
                           @endif
-                        </td>
-                      </tr>
-                      @endforeach
-                    </tbody>
-                  </table>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                          <h6 class="card-title mb-0">{{ $member->full_name ?? $member->name }}</h6>
+                          <p class="text-muted f-12 mb-0">{{ $member->email }}</p>
+                        </div>
+                      </div>
+                      
+                      <div class="mb-2">
+                        <small class="text-muted d-block mb-1">Role</small>
+                        <span class="badge bg-light-{{ $member->role === 'Manager' ? 'danger' : ($member->role === 'Team_Lead' ? 'warning' : 'primary') }}">
+                          {{ $member->role }}
+                        </span>
+                      </div>
+                      
+                      <div class="mb-2">
+                        <small class="text-muted d-block mb-1">Team</small>
+                        <p class="mb-0 f-14">{{ $member->team->name ?? 'N/A' }}</p>
+                      </div>
+                      
+                      <div class="mb-2">
+                        <small class="text-muted d-block mb-1">Status</small>
+                        <span class="badge bg-light-success rounded-pill f-12">Active</span>
+                      </div>
+                      
+                      @if($member->tech_stack)
+                      <div>
+                        <small class="text-muted d-block mb-1">Tech Stack</small>
+                        <div class="d-flex flex-wrap gap-1">
+                          @foreach(explode(',', $member->tech_stack) as $tech)
+                            <span class="badge bg-light-secondary">{{ trim($tech) }}</span>
+                          @endforeach
+                        </div>
+                      </div>
+                      @endif
+                    </div>
+                    <div class="card-footer bg-transparent border-top-0">
+                      <small class="text-muted">ID: #{{ $member->id }}</small>
+                    </div>
+                  </div>
                 </div>
+                @endforeach
               </div>
             </div>
+            @endif
+
+            @if($otherMembers->count() > 0)
+            <!-- Other Team Members Section -->
+            <div>
+              <h5 class="mb-3">
+                <span class="badge bg-light-secondary me-2">{{ $otherMembers->count() }}</span>
+                Other Team Members
+              </h5>
+              <div class="row g-3">
+                @foreach($otherMembers as $member)
+                <div class="col-md-6 col-lg-4 col-xl-3">
+                  <div class="card h-100">
+                    <div class="card-body">
+                      <div class="d-flex align-items-center mb-3">
+                        <div class="flex-shrink-0">
+                          @if($member->profile_image)
+                            <img src="{{ $member->profile_image }}" alt="{{ $member->full_name ?? $member->name }}" class="avtar avtar-m rounded-circle" style="object-fit: cover; width: 100%; height: 100%;" />
+                          @else
+                            <span class="avtar avtar-m rounded-circle bg-light-primary">
+                              {{ $member->status_emoji ?? '👤' }}
+                            </span>
+                          @endif
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                          <h6 class="card-title mb-0">{{ $member->full_name ?? $member->name }}</h6>
+                          <p class="text-muted f-12 mb-0">{{ $member->email }}</p>
+                        </div>
+                      </div>
+                      
+                      <div class="mb-2">
+                        <small class="text-muted d-block mb-1">Role</small>
+                        <span class="badge bg-light-{{ $member->role === 'Manager' ? 'danger' : ($member->role === 'Team_Lead' ? 'warning' : 'primary') }}">
+                          {{ $member->role }}
+                        </span>
+                      </div>
+                      
+                      <div class="mb-2">
+                        <small class="text-muted d-block mb-1">Team</small>
+                        <p class="mb-0 f-14">{{ $member->team->name ?? 'N/A' }}</p>
+                      </div>
+                      
+                      <div class="mb-2">
+                        <small class="text-muted d-block mb-1">Status</small>
+                        <span class="badge bg-light-success rounded-pill f-12">Active</span>
+                      </div>
+                      
+                      @if($member->tech_stack)
+                      <div>
+                        <small class="text-muted d-block mb-1">Tech Stack</small>
+                        <div class="d-flex flex-wrap gap-1">
+                          @foreach(explode(',', $member->tech_stack) as $tech)
+                            <span class="badge bg-light-secondary">{{ trim($tech) }}</span>
+                          @endforeach
+                        </div>
+                      </div>
+                      @endif
+                    </div>
+                    <div class="card-footer bg-transparent border-top-0">
+                      <small class="text-muted">ID: #{{ $member->id }}</small>
+                    </div>
+                  </div>
+                </div>
+                @endforeach
+              </div>
+            </div>
+            @endif
           </div>
           <!-- [ sample-page ] end -->
         </div>
         <!-- [ Main Content ] end -->
-      </div>
-    </div>
 @endsection
 
 @section('scripts')
-    <script type="module">
-      import { DataTable } from '/build/js/plugins/module.js';
-      window.dt = new DataTable('#pc-dt-simple');
-    </script>
+    <!-- No scripts needed for card groups -->
 @endsection
 

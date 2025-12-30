@@ -16,7 +16,7 @@
             @endcan
             <div class="card">
               <div class="card-header">
-                <h5>Team Learning Goals</h5>
+                <h5>Onboarding Learning Goals</h5>
               </div>
               <div class="card-body">
                 @if($goals->count() > 0)
@@ -28,7 +28,7 @@
                           <h5 class="mb-2">{{ $goal->title }}</h5>
                           <p class="text-muted mb-2">{{ $goal->description }}</p>
                           <p class="mb-2">
-                            <strong>Team:</strong> {{ $goal->team->name }}
+                            <strong>Team:</strong> {{ $goal->team_id ? ($goal->team ? $goal->team->name : 'N/A') : 'All Teams' }}
                             @if($goal->resource_url)
                               | <a href="{{ $goal->resource_url }}" target="_blank" class="text-primary">Resource Link</a>
                             @endif
@@ -39,7 +39,7 @@
                             @else
                               <span class="badge bg-light-secondary me-2">In Progress</span>
                             @endif
-                            @if(!isset($userProgress[$goal->id]) || !$userProgress[$goal->id])
+                            @if((!isset($userProgress[$goal->id]) || !$userProgress[$goal->id]) && (Auth::user()->isEmployee() || Auth::user()->isIntern()))
                               <form action="{{ route('onboarding.mark-completed', $goal) }}" method="POST" class="d-inline">
                                 @csrf
                                 <button type="submit" class="btn btn-sm btn-success">Mark as Completed</button>
@@ -57,7 +57,7 @@
                   </div>
                   @endforeach
                 @else
-                  <p class="text-muted">No learning goals available for your team.</p>
+                  <p class="text-muted">No learning goals available.</p>
                 @endif
               </div>
             </div>

@@ -3,9 +3,13 @@
 namespace App\Providers;
 
 use App\Models\LearningGoal;
+use App\Models\Notice;
+use App\Models\Question;
 use App\Models\Task;
 use App\Models\User;
 use App\Policies\LearningGoalPolicy;
+use App\Policies\NoticePolicy;
+use App\Policies\QAPolicy;
 use App\Policies\TaskPolicy;
 use App\Policies\UserPolicy;
 use Illuminate\Support\Facades\Gate;
@@ -23,6 +27,8 @@ class AppServiceProvider extends ServiceProvider
         Task::class => TaskPolicy::class,
         User::class => UserPolicy::class,
         LearningGoal::class => LearningGoalPolicy::class,
+        Question::class => QAPolicy::class,
+        Notice::class => NoticePolicy::class,
     ];
 
     /**

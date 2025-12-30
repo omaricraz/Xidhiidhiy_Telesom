@@ -21,21 +21,25 @@ class WhoIsWhoController extends Controller
         $user = Auth::user();
         
         // Get all users with their teams
-        $query = User::with('team');
+        $allUsers = User::with('team')->latest()->get();
 
-        // Apply scoped queries based on role
-        if ($user->isManager()) {
-            // Manager sees all users
-            $users = $query->latest()->get();
-        } elseif ($user->isTeamLead() && $user->team_id) {
-            // Team Lead sees users from their team
-            $users = $query->where('team_id', $user->team_id)->latest()->get();
+        // Separate users into current team and other teams
+        $teamMembers = collect();
+        $otherMembers = collect();
+
+        if ($user->team_id) {
+            // Get current user's team members
+            $teamMembers = $allUsers->where('team_id', $user->team_id);
+            // Get all other team members (different team or no team)
+            $otherMembers = $allUsers->filter(function ($u) use ($user) {
+                return $u->team_id != $user->team_id;
+            });
         } else {
-            // Employee and Intern see users from their team
-            $users = $query->where('team_id', $user->team_id)->latest()->get();
+            // If user has no team, show all users as "other members"
+            $otherMembers = $allUsers;
         }
 
-        return view('whoswho.index', compact('users'));
+        return view('whoswho.index', compact('teamMembers', 'otherMembers', 'user'));
     }
 }
 
