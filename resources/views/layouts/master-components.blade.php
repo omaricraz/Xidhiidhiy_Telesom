@@ -19,8 +19,6 @@
     <!-- [ Main Content ] end -->
 
     @include('layouts/footer-component')
-
-    @include('layouts/customizer')
     
     @include('layouts/footer-js')
 

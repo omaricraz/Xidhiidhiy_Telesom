@@ -10,12 +10,21 @@
   </head>
 <!-- [Body] Start -->
 <body class="@yield('bodyClass')" data-pc-layout="vertical" data-pc-direction="ltr" data-pc-theme="light" data-pc-preset="preset-1">
+<script>
+  // Apply theme from localStorage immediately to prevent flash of wrong theme
+  (function() {
+    if (typeof Storage !== 'undefined') {
+      var savedTheme = localStorage.getItem('theme');
+      if (savedTheme && savedTheme !== 'default') {
+        document.body.setAttribute('data-pc-theme', savedTheme);
+      }
+    }
+  })();
+</script>
     <!-- component-page -->
     @yield('content')
 
     <!-- [ Main Content ] end -->
-
-    @include('layouts/customizer')
     
     @include('layouts/footer-js')
 

@@ -7,11 +7,46 @@
 <link rel="stylesheet" href="/build/css/plugins/dataTables.bootstrap5.min.css" />
 <link rel="stylesheet" href="/build/css/plugins/responsive.bootstrap5.min.css" />
 @endif
+<style>
+  /* Task title styling for light mode */
+  [data-pc-theme="light"] .task-title {
+    color: #000000 !important;
+    font-weight: bold !important;
+  }
+  
+  /* Task title in table view for light mode */
+  [data-pc-theme="light"] .task-title-table {
+    color: #000000 !important;
+    font-weight: bold !important;
+  }
+  
+  /* Task title styling for dark mode - white color */
+  [data-pc-theme="dark"] .task-title {
+    color: #ffffff !important;
+    font-weight: bold !important;
+  }
+  
+  /* Task title in table view for dark mode - white color */
+  [data-pc-theme="dark"] .task-title-table {
+    color: #ffffff !important;
+    font-weight: bold !important;
+  }
+  
+  /* Tasks header styling */
+  .tasks-header {
+    text-align: center;
+    font-size: 2rem;
+    text-decoration: underline;
+    margin-bottom: 1rem;
+  }
+</style>
 @endsection
 
 @section('content')
 
+@if(Auth::user()->isManager() || Auth::user()->isTeamLead())
 <x-breadcrumb item="Tasks" active="List"/>
+@endif
 
         <!-- [ Main Content ] start -->
         <div class="row">
@@ -43,7 +78,7 @@
                         @foreach($tasks as $task)
                         <tr>
                           <td>{{ $task->id }}</td>
-                          <td><span style="color: #92CF01; font-weight: 500;">{{ $task->title }}</span></td>
+                          <td><span class="task-title-table">{{ $task->title }}</span></td>
                           <td>
                             <span class="badge bg-light-{{ $task->priority === 'High' ? 'danger' : ($task->priority === 'Medium' ? 'warning' : 'success') }}">
                               {{ $task->priority }}
@@ -99,25 +134,7 @@
             <div class="col-12">
               <div class="card">
                 <div class="card-body pb-0">
-                  <div class="d-flex align-items-center justify-content-between">
-                    <h5 class="mb-0">My Task</h5>
-                    <div class="dropdown">
-                      <a
-                        class="avtar avtar-s btn-link-secondary dropdown-toggle arrow-none"
-                        href="#"
-                        data-bs-toggle="dropdown"
-                        aria-haspopup="true"
-                        aria-expanded="false"
-                      >
-                        <i class="ti ti-dots-vertical f-18"></i>
-                      </a>
-                      <div class="dropdown-menu dropdown-menu-end">
-                        <a class="dropdown-item" href="#">Today</a>
-                        <a class="dropdown-item" href="#">Weekly</a>
-                        <a class="dropdown-item" href="#">Monthly</a>
-                      </div>
-                    </div>
-                  </div>
+                  <h3 class="tasks-header mb-1">Tasks</h3>
                 </div>
                 <ul class="list-group list-group-flush border-top-0">
                   @if(isset($userTasks) && $userTasks->count() > 0)
@@ -125,8 +142,8 @@
                     <li class="list-group-item">
                       <div class="d-flex align-items-start">
                         <div class="flex-grow-1 me-2">
-                          <h6 class="mb-0">
-                            <a href="{{ route('tasks.show', $task) }}" class="text-decoration-none" style="color: #92CF01; font-weight: 500;">{{ $task->title }}</a>
+                          <h6 class="mb-0" style="font-size: 0.95rem;">
+                            <a href="{{ route('tasks.show', $task) }}" class="text-decoration-none task-title">{{ $task->title }}</a>
                           </h6>
                           <p class="my-1">
                             <i class="ti ti-{{ $task->status === 'Completed' ? 'check' : ($task->status === 'In_Progress' ? 'clock' : 'archive') }}"></i> 
@@ -194,7 +211,8 @@
     <script src="/build/js/plugins/responsive.bootstrap5.min.js"></script>
     <script>
       $('#pc-dt-simple').DataTable({
-        responsive: true
+        responsive: true,
+        order: [[0, 'desc']]  // Sort by first column (ID) in descending order
       });
     </script>
     @endif

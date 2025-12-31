@@ -1,6 +1,16 @@
 @auth
 @if(Auth::user()->role === 'Manager')
 <li class="pc-item">
+  <a href="{{ route('manager.dashboard') }}" class="pc-link">
+    <span class="pc-micon">
+      <svg class="pc-icon">
+        <use xlink:href="#custom-status-up"></use>
+      </svg>
+    </span>
+    <span class="pc-mtext" data-i18n="Dashboard">Dashboard</span>
+  </a>
+</li>
+<li class="pc-item">
   <a href="{{ route('admin.users.index') }}" class="pc-link">
     <span class="pc-micon">
       <svg class="pc-icon">
@@ -8,6 +18,18 @@
       </svg>
     </span>
     <span class="pc-mtext" data-i18n="User Management">User Management</span>
+  </a>
+</li>
+@endif
+@if(Auth::user()->role !== 'Manager')
+<li class="pc-item">
+  <a href="@if(Auth::user()->isEmployee() || Auth::user()->isIntern()){{ route('employee.dashboard') }}@elseif(Auth::user()->isTeamLead()){{ route('lead.tasks.index') }}@else{{ route('tasks.index') }}@endif" class="pc-link">
+    <span class="pc-micon">
+      <svg class="pc-icon">
+        <use xlink:href="#custom-status-up"></use>
+      </svg>
+    </span>
+    <span class="pc-mtext" data-i18n="Dashboard">Dashboard</span>
   </a>
 </li>
 @endif

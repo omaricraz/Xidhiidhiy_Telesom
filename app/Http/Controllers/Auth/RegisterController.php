@@ -31,6 +31,29 @@ class RegisterController extends Controller
     protected $redirectTo = '/home';
 
     /**
+     * The user has been registered.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  mixed  $user
+     * @return mixed
+     */
+    protected function registered(\Illuminate\Http\Request $request, $user)
+    {
+        // Redirect based on role (same logic as LoginController)
+        if ($user->isManager()) {
+            return redirect()->route('manager.dashboard');
+        } elseif ($user->isTeamLead()) {
+            return redirect()->route('lead.tasks.index');
+        } elseif ($user->isIntern()) {
+            return redirect()->route('employee.dashboard');
+        } elseif ($user->isEmployee()) {
+            return redirect()->route('employee.dashboard');
+        } else {
+            return redirect()->route('tasks.index');
+        }
+    }
+
+    /**
      * Create a new controller instance.
      *
      * @return void

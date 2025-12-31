@@ -18,21 +18,31 @@ class QAController extends Controller
     /**
      * Display a listing of the questions.
      */
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
         $query = Question::with(['creator', 'team']);
+        $selectedTeam = $request->get('team');
 
         // Apply scoped queries based on role
         if ($user->isManager()) {
-            // Manager sees all questions
+            // Manager sees all questions, can filter by team
+            if ($selectedTeam) {
+                if ($selectedTeam === 'global') {
+                    $query->whereNull('team_id');
+                } else {
+                    $query->where('team_id', $selectedTeam);
+                }
+            }
             $questions = $query->latest()->get();
+            $allTeams = Team::all();
         } elseif ($user->isTeamLead() && $user->team_id) {
             // Team Lead sees questions from their team or questions without a team (global)
             $questions = $query->where(function ($q) use ($user) {
                 $q->where('team_id', $user->team_id)
                   ->orWhereNull('team_id');
             })->latest()->get();
+            $allTeams = collect([$user->team]);
         } else {
             // Other users see questions from their team or global questions
             if ($user->team_id) {
@@ -43,9 +53,15 @@ class QAController extends Controller
             } else {
                 $questions = $query->whereNull('team_id')->latest()->get();
             }
+            $allTeams = $user->team ? collect([$user->team]) : collect();
         }
         
-        return view('qa.index', compact('questions'));
+        // Group questions by team for better display
+        $questionsByTeam = $questions->groupBy(function ($question) {
+            return $question->team_id && $question->team ? $question->team->name : 'Global';
+        });
+        
+        return view('qa.index', compact('questions', 'questionsByTeam', 'allTeams', 'selectedTeam'));
     }
 
     /**
@@ -54,7 +70,16 @@ class QAController extends Controller
     public function create()
     {
         Gate::authorize('create', Question::class);
-        $teams = Team::all();
+        $user = Auth::user();
+        
+        // Managers can select any team, Team Leads can only select their team
+        if ($user->isManager()) {
+            $teams = Team::all();
+        } else {
+            // Team Lead can only create questions for their team
+            $teams = $user->team_id ? Team::where('id', $user->team_id)->get() : collect();
+        }
+        
         return view('qa.create', compact('teams'));
     }
 
@@ -65,13 +90,20 @@ class QAController extends Controller
     {
         Gate::authorize('create', Question::class);
 
+        $user = Auth::user();
+        
         $validated = $request->validate([
             'question' => 'required|string',
             'answer' => 'nullable|string',
             'team_id' => 'nullable|exists:teams,id',
         ]);
 
-        $validated['created_by'] = Auth::id();
+        // Restrict Team Leads to only their team
+        if ($user->isTeamLead() && !$user->isManager()) {
+            $validated['team_id'] = $user->team_id;
+        }
+
+        $validated['created_by'] = $user->id;
 
         Question::create($validated);
 
@@ -94,7 +126,16 @@ class QAController extends Controller
     public function edit(Question $question)
     {
         Gate::authorize('update', $question);
-        $teams = Team::all();
+        $user = Auth::user();
+        
+        // Managers can select any team, Team Leads can only select their team
+        if ($user->isManager()) {
+            $teams = Team::all();
+        } else {
+            // Team Lead can only edit questions for their team
+            $teams = $user->team_id ? Team::where('id', $user->team_id)->get() : collect();
+        }
+        
         return view('qa.edit', compact('question', 'teams'));
     }
 

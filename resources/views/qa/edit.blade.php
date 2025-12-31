@@ -38,13 +38,20 @@
                     </div>
                     <div class="col-md-12">
                       <div class="mb-3">
-                        <label class="form-label">Team (Optional - Leave blank for global question)</label>
-                        <select class="form-select @error('team_id') is-invalid @enderror" name="team_id">
-                          <option value="">Global (All Teams)</option>
-                          @foreach($teams as $team)
-                            <option value="{{ $team->id }}" {{ old('team_id', $question->team_id) == $team->id ? 'selected' : '' }}>{{ $team->name }}</option>
-                          @endforeach
-                        </select>
+                        <label class="form-label">Team</label>
+                        @if(Auth::user()->isManager())
+                          <select class="form-select @error('team_id') is-invalid @enderror" name="team_id">
+                            <option value="">Global (All Teams)</option>
+                            @foreach($teams as $team)
+                              <option value="{{ $team->id }}" {{ old('team_id', $question->team_id) == $team->id ? 'selected' : '' }}>{{ $team->name }}</option>
+                            @endforeach
+                          </select>
+                          <small class="form-text text-muted">Leave blank for global question accessible to all teams</small>
+                        @else
+                          <input type="text" class="form-control" value="{{ $teams->first()->name ?? ($question->team ? $question->team->name : 'Global') }}" readonly>
+                          <input type="hidden" name="team_id" value="{{ $question->team_id }}">
+                          <small class="form-text text-muted">Team Leads can only edit questions for their team</small>
+                        @endif
                         @error('team_id')
                           <div class="invalid-feedback">{{ $message }}</div>
                         @enderror

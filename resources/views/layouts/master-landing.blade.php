@@ -17,8 +17,6 @@
     @yield('content')
 
     <!-- [ Main Content ] end -->
-
-    @include('layouts/customizer')
     
     @include('layouts/footer-js')
 

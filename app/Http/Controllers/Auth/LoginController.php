@@ -42,7 +42,9 @@ class LoginController extends Controller
         } elseif ($user->isTeamLead()) {
             return redirect()->route('lead.tasks.index');
         } elseif ($user->isIntern()) {
-            return redirect()->route('onboarding.index');
+            return redirect()->route('employee.dashboard');
+        } elseif ($user->isEmployee()) {
+            return redirect()->route('employee.dashboard');
         } else {
             return redirect()->route('tasks.index');
         }
@@ -56,7 +58,7 @@ class LoginController extends Controller
      */
     protected function loggedOut(\Illuminate\Http\Request $request)
     {
-        return redirect('/login');
+        return redirect()->route('homepage');
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Team;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -20,6 +21,33 @@ class WhoIsWhoController extends Controller
     {
         $user = Auth::user();
         
+        // For managers, show teams divided into Dev and DevOps
+        if ($user->isManager()) {
+            // Get all teams with their members (excluding the manager)
+            $teams = Team::with(['members' => function($query) use ($user) {
+                $query->where('id', '!=', $user->id);
+            }])->get();
+            
+            // Group users by team
+            $teamsWithMembers = [];
+            foreach ($teams as $team) {
+                $teamsWithMembers[$team->name] = $team->members;
+            }
+            
+            // Also get users without teams (excluding the manager)
+            $usersWithoutTeam = User::whereNull('team_id')
+                ->where('id', '!=', $user->id)
+                ->get();
+            
+            return view('whoswho.index', [
+                'teamsWithMembers' => $teamsWithMembers,
+                'usersWithoutTeam' => $usersWithoutTeam,
+                'user' => $user,
+                'isManager' => true
+            ]);
+        }
+        
+        // For non-managers, use the original logic
         // Get all users with their teams
         $allUsers = User::with('team')->latest()->get();
 
@@ -39,7 +67,12 @@ class WhoIsWhoController extends Controller
             $otherMembers = $allUsers;
         }
 
-        return view('whoswho.index', compact('teamMembers', 'otherMembers', 'user'));
+        return view('whoswho.index', [
+            'teamMembers' => $teamMembers,
+            'otherMembers' => $otherMembers,
+            'user' => $user,
+            'isManager' => false
+        ]);
     }
 }
 

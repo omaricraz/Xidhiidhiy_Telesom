@@ -46,7 +46,6 @@
     </div>
     <!-- [ Main Content ] end -->
     @include('layouts/footer-block')
-    @include('layouts/customizer')
 
     @include('layouts/footer-js')
 

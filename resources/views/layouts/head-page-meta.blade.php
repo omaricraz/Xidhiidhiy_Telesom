@@ -13,4 +13,4 @@
 <meta name="author" content="Telesom" />
 
 <!-- [Favicon] icon -->
-<link rel="icon" href="/build/images/favicon.svg" type="image/x-icon" />
+<link rel="icon" href="/build/images/favicon.svg" type="image/svg+xml" />

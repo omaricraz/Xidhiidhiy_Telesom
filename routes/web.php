@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\EmployeeDashboardController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LearningGoalController;
 use App\Http\Controllers\ManagerDashboardController;
@@ -14,8 +15,11 @@ use Illuminate\Support\Facades\Route;
 
 Auth::routes();
 
-// Redirect guests to login page, authenticated users to their default route
-Route::get('/', function () {
+// Homepage for guests
+Route::get('/', [HomeController::class, 'homepage'])->name('homepage');
+
+// Redirect authenticated users from homepage to their default route
+Route::get('/home', function () {
     if (Auth::check()) {
         $user = Auth::user();
         // Redirect based on role (same logic as LoginController)
@@ -24,24 +28,23 @@ Route::get('/', function () {
         } elseif ($user->isTeamLead()) {
             return redirect()->route('lead.tasks.index');
         } elseif ($user->isIntern()) {
-            return redirect()->route('onboarding.index');
+            return redirect()->route('employee.dashboard');
+        } elseif ($user->isEmployee()) {
+            return redirect()->route('employee.dashboard');
         } else {
             return redirect()->route('tasks.index');
         }
     }
-    return redirect()->route('login');
-});
+    return redirect()->route('homepage');
+})->name('home');
 
 // Define a group of routes with 'auth' middleware applied
 Route::middleware(['auth'])->group(function () {
-    // Define a GET route for the home/dashboard
-    Route::get('/home', function () {
-        // Return a view named 'index' when accessing the home URL
-        return view('index');
-    })->name('home');
-
     // Manager Dashboard
     Route::get('manager/dashboard', [ManagerDashboardController::class, 'index'])->name('manager.dashboard');
+
+    // Employee Dashboard
+    Route::get('employee/dashboard', [EmployeeDashboardController::class, 'index'])->name('employee.dashboard');
 
     // Admin routes (Manager only)
     Route::prefix('admin')->name('admin.')->group(function () {

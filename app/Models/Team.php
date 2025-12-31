@@ -39,6 +39,14 @@ class Team extends Model
     {
         return $this->hasMany(LearningGoal::class, 'team_id');
     }
+
+    /**
+     * Get all questions for the team.
+     */
+    public function questions(): HasMany
+    {
+        return $this->hasMany(Question::class, 'team_id');
+    }
 }
 
 

@@ -13,7 +13,18 @@ class HomeController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware('auth')->except('homepage');
+    }
+
+    /**
+     * Show the homepage for everyone (guests and authenticated users).
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function homepage()
+    {
+        // Show homepage to everyone - no redirect
+        return view('homepage');
     }
 
     /**

@@ -397,37 +397,19 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        // Create Questions/FAQ demo data
-        $questions = [
+        // Create Questions/FAQ demo data - Global Questions
+        $globalQuestions = [
             [
                 'question' => 'How do I submit a task for review?',
                 'answer' => 'You can submit a task for review by updating its status to "Completed" in the Tasks section. Your team lead will be notified and can review your work.',
                 'created_by' => $manager->id,
-                'team_id' => null, // Global question
+                'team_id' => null,
             ],
             [
                 'question' => 'What is the process for onboarding new team members?',
                 'answer' => 'New team members should complete the learning goals assigned to their team in the Onboarding section. Each goal includes resources and can be marked as completed once finished.',
                 'created_by' => $manager->id,
-                'team_id' => null, // Global question
-            ],
-            [
-                'question' => 'How do I access the development environment?',
-                'answer' => 'Contact your team lead for access credentials. The development environment setup is typically done during your first week. Check the onboarding goals for detailed instructions.',
-                'created_by' => $devLead->id,
-                'team_id' => $devTeam->id, // Team-specific question
-            ],
-            [
-                'question' => 'What tools do I need for Laravel development?',
-                'answer' => 'You will need PHP 8.1+, Composer, Node.js, and a code editor like VS Code. Your team lead can provide the complete setup guide in the onboarding section.',
-                'created_by' => $devLead->id,
-                'team_id' => $devTeam->id,
-            ],
-            [
-                'question' => 'How do I deploy using Docker?',
-                'answer' => 'Use Docker Compose to build and run containers. Check the DevOps onboarding goals for detailed Docker tutorials and best practices. Make sure you have Docker Desktop installed and configured properly.',
-                'created_by' => $devOpsLead->id,
-                'team_id' => $devOpsTeam->id,
+                'team_id' => null,
             ],
             [
                 'question' => 'Where can I find project documentation?',
@@ -442,14 +424,139 @@ class DatabaseSeeder extends Seeder
                 'team_id' => null,
             ],
             [
+                'question' => 'How do I report a bug or issue?',
+                'answer' => 'Report bugs or issues to your team lead. They will assess the issue and either assign it as a task or escalate it to the manager if needed. Include as much detail as possible: steps to reproduce, expected vs actual behavior, and screenshots if applicable.',
+                'created_by' => $manager->id,
+                'team_id' => null,
+            ],
+            [
+                'question' => 'What are the working hours and remote work policies?',
+                'answer' => 'Standard working hours are 9 AM to 5 PM, but we offer flexible schedules. Remote work is allowed based on your role and team lead approval. Check with your team lead for specific team policies.',
+                'created_by' => $manager->id,
+                'team_id' => null,
+            ],
+            [
+                'question' => 'How do I request time off?',
+                'answer' => 'Submit your time off request to your team lead at least one week in advance. Include the dates and reason. Your team lead will review and approve based on team workload and coverage.',
+                'created_by' => $manager->id,
+                'team_id' => null,
+            ],
+        ];
+
+        // Dev Team Questions
+        $devTeamQuestions = [
+            [
+                'question' => 'How do I access the development environment?',
+                'answer' => 'Contact your team lead for access credentials. The development environment setup is typically done during your first week. Check the onboarding goals for detailed instructions.',
+                'created_by' => $devLead->id,
+                'team_id' => $devTeam->id,
+            ],
+            [
+                'question' => 'What tools do I need for Laravel development?',
+                'answer' => 'You will need PHP 8.1+, Composer, Node.js, and a code editor like VS Code. Your team lead can provide the complete setup guide in the onboarding section.',
+                'created_by' => $devLead->id,
+                'team_id' => $devTeam->id,
+            ],
+            [
                 'question' => 'How do I mark a learning goal as completed?',
                 'answer' => 'Navigate to the Onboarding section, find the learning goal you want to complete, and click the "Mark as Completed" button. This will update your progress and help track your onboarding journey.',
                 'created_by' => $devLead->id,
                 'team_id' => $devTeam->id,
             ],
+            [
+                'question' => 'What is the Git workflow for this project?',
+                'answer' => 'We use Git Flow with main, develop, and feature branches. Always create a feature branch from develop for new work. Submit pull requests for code review before merging. Never push directly to main or develop branches.',
+                'created_by' => $devLead->id,
+                'team_id' => $devTeam->id,
+            ],
+            [
+                'question' => 'How do I run database migrations?',
+                'answer' => 'Use `php artisan migrate` to run pending migrations. Always test migrations in your local environment first. For production, coordinate with your team lead. Never run migrations directly on production without approval.',
+                'created_by' => $devLead->id,
+                'team_id' => $devTeam->id,
+            ],
+            [
+                'question' => 'What coding standards should I follow?',
+                'answer' => 'Follow PSR-12 coding standards for PHP. Use Laravel conventions for naming and structure. Run `php artisan pint` before committing code. Review the team\'s style guide in the onboarding section for more details.',
+                'created_by' => $devLead->id,
+                'team_id' => $devTeam->id,
+            ],
+            [
+                'question' => 'How do I set up the local development environment?',
+                'answer' => '1. Clone the repository, 2. Copy .env.example to .env and configure, 3. Run `composer install`, 4. Run `npm install`, 5. Run `php artisan key:generate`, 6. Set up your database, 7. Run `php artisan migrate --seed`, 8. Run `npm run dev` for assets. Contact your team lead if you encounter issues.',
+                'created_by' => $devLead->id,
+                'team_id' => $devTeam->id,
+            ],
+            [
+                'question' => 'How do I write unit tests?',
+                'answer' => 'Use PHPUnit for testing. Write tests in the tests/ directory. Follow the Arrange-Act-Assert pattern. Aim for at least 80% code coverage for new features. Run tests with `php artisan test`.',
+                'created_by' => $devLead->id,
+                'team_id' => $devTeam->id,
+            ],
+            [
+                'question' => 'What is the process for code reviews?',
+                'answer' => '1. Create a feature branch, 2. Make your changes and commit, 3. Push to remote and create a pull request, 4. Request review from your team lead, 5. Address any feedback, 6. Once approved, merge to develop. All code must be reviewed before merging.',
+                'created_by' => $devLead->id,
+                'team_id' => $devTeam->id,
+            ],
         ];
 
-        foreach ($questions as $questionData) {
+        // DevOps Team Questions
+        $devOpsTeamQuestions = [
+            [
+                'question' => 'How do I deploy using Docker?',
+                'answer' => 'Use Docker Compose to build and run containers. Check the DevOps onboarding goals for detailed Docker tutorials and best practices. Make sure you have Docker Desktop installed and configured properly.',
+                'created_by' => $devOpsLead->id,
+                'team_id' => $devOpsTeam->id,
+            ],
+            [
+                'question' => 'How do I set up a Kubernetes cluster locally?',
+                'answer' => 'Use Minikube or Docker Desktop Kubernetes for local development. Install kubectl and configure it. Run `minikube start` or enable Kubernetes in Docker Desktop. Check the onboarding goals for step-by-step instructions.',
+                'created_by' => $devOpsLead->id,
+                'team_id' => $devOpsTeam->id,
+            ],
+            [
+                'question' => 'What is our CI/CD pipeline setup?',
+                'answer' => 'We use GitHub Actions for CI/CD. The pipeline runs tests, builds Docker images, and deploys to staging automatically. Production deployments require manual approval. Check the .github/workflows directory for pipeline configurations.',
+                'created_by' => $devOpsLead->id,
+                'team_id' => $devOpsTeam->id,
+            ],
+            [
+                'question' => 'How do I monitor application performance?',
+                'answer' => 'We use monitoring tools like Prometheus and Grafana. Access dashboards through the team portal. Set up alerts for critical metrics. Contact your team lead for access credentials and training on using these tools.',
+                'created_by' => $devOpsLead->id,
+                'team_id' => $devOpsTeam->id,
+            ],
+            [
+                'question' => 'How do I manage secrets and environment variables?',
+                'answer' => 'Never commit secrets to Git. Use environment variables in .env files for local development. For production, use our secret management system. Contact your team lead to add or update secrets. Follow the principle of least privilege.',
+                'created_by' => $devOpsLead->id,
+                'team_id' => $devOpsTeam->id,
+            ],
+            [
+                'question' => 'What backup and disaster recovery procedures do we have?',
+                'answer' => 'We perform daily automated backups of databases and critical files. Backups are retained for 30 days. Disaster recovery procedures are documented in the team wiki. In case of an incident, contact your team lead immediately.',
+                'created_by' => $devOpsLead->id,
+                'team_id' => $devOpsTeam->id,
+            ],
+            [
+                'question' => 'How do I troubleshoot deployment issues?',
+                'answer' => '1. Check deployment logs in the CI/CD dashboard, 2. Verify environment variables are set correctly, 3. Check container health and resource usage, 4. Review recent changes in the deployment, 5. Contact your team lead if issues persist. Always document the issue and solution.',
+                'created_by' => $devOpsLead->id,
+                'team_id' => $devOpsTeam->id,
+            ],
+            [
+                'question' => 'What infrastructure as code tools do we use?',
+                'answer' => 'We use Terraform for infrastructure provisioning and Ansible for configuration management. Infrastructure definitions are version-controlled in Git. Never make manual changes to production infrastructure - always use IaC.',
+                'created_by' => $devOpsLead->id,
+                'team_id' => $devOpsTeam->id,
+            ],
+        ];
+
+        // Combine all questions
+        $allQuestions = array_merge($globalQuestions, $devTeamQuestions, $devOpsTeamQuestions);
+
+        foreach ($allQuestions as $questionData) {
             Question::firstOrCreate(
                 [
                     'question' => $questionData['question'],

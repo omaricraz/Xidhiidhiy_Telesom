@@ -90,7 +90,7 @@
     </li>
     <li class="dropdown pc-h-item header-user-profile">
       <a class="pc-head-link dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" data-bs-auto-close="outside" aria-expanded="false">
-        <img src="/build/images/user/avatar-2.jpg" alt="user-image" class="user-avtar" />
+        <img src="{{ Auth::user()->getProfileImageUrl() }}" alt="user-image" class="user-avtar rounded-circle" style="width: 40px; height: 40px; object-fit: cover;" />
       </a>
       <div class="dropdown-menu dropdown-user-profile dropdown-menu-end pc-h-dropdown">
         <div class="dropdown-header d-flex align-items-center justify-content-between">
@@ -99,11 +99,14 @@
         <div class="dropdown-body">
           <div class="d-flex mb-3">
             <div class="flex-shrink-0">
-              <img src="/build/images/user/avatar-2.jpg" alt="user-image" class="user-avtar wid-35" />
+              <img src="{{ Auth::user()->getProfileImageUrl() }}" alt="user-image" class="user-avtar rounded-circle" style="width: 35px; height: 35px; object-fit: cover;" />
             </div>
             <div class="flex-grow-1 ms-3">
               <h6 class="mb-1">{{ Auth::user()->full_name ?? Auth::user()->name }}</h6>
-              <span>{{ Auth::user()->email }}</span>
+              <span class="d-block mb-1">{{ Auth::user()->email }}</span>
+              <span class="badge bg-light-{{ Auth::user()->role === 'Manager' ? 'danger' : (Auth::user()->role === 'Team_Lead' ? 'warning' : 'primary') }} fs-7 px-2 py-1">
+                {{ Auth::user()->role }}
+              </span>
             </div>
           </div>
           <hr class="border-secondary border-opacity-50" />

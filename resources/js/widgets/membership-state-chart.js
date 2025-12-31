@@ -1,6 +1,11 @@
 'use strict';
 document.addEventListener('DOMContentLoaded', function () {
   setTimeout(function () {
+    // Detect theme from body attribute
+    var currentTheme = document.getElementsByTagName('body')[0].getAttribute('data-pc-theme') || 'light';
+    var chartColor = currentTheme === 'dark' ? '#9c27b0' : '#28a745'; // Purple for dark, green for light
+    var trackColor = currentTheme === 'dark' ? '#9c27b025' : '#28a74525'; // Purple for dark, green for light
+    
     var membership_state_chart_option = {
       series: [76],
       chart: {
@@ -10,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function () {
           enabled: true
         }
       },
-      colors: ['#4680ff'],
+      colors: [chartColor],
       plotOptions: {
         radialBar: {
           startAngle: -95,
@@ -20,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function () {
             size: '40%'
           },
           track: {
-            background: '#4680ff25',
+            background: trackColor,
             strokeWidth: '97%',
             margin: 10
           },
@@ -47,5 +52,33 @@ document.addEventListener('DOMContentLoaded', function () {
     };
     var chart = new ApexCharts(document.querySelector('#membership-state-chart'), membership_state_chart_option);
     chart.render();
+    
+    // Watch for theme changes and update chart colors
+    var observer = new MutationObserver(function(mutations) {
+      mutations.forEach(function(mutation) {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'data-pc-theme') {
+          var newTheme = document.getElementsByTagName('body')[0].getAttribute('data-pc-theme') || 'light';
+          var newChartColor = newTheme === 'dark' ? '#9c27b0' : '#28a745';
+          var newTrackColor = newTheme === 'dark' ? '#9c27b025' : '#28a74525';
+          
+          chart.updateOptions({
+            colors: [newChartColor],
+            plotOptions: {
+              radialBar: {
+                track: {
+                  background: newTrackColor
+                }
+              }
+            }
+          });
+        }
+      });
+    });
+    
+    // Start observing the body element for theme changes
+    observer.observe(document.getElementsByTagName('body')[0], {
+      attributes: true,
+      attributeFilter: ['data-pc-theme']
+    });
   }, 500);
 });

@@ -251,6 +251,8 @@ function layout_change(layout, skipSave) {
     updateLogo('.navbar-brand .logo-lg', '/build/images/logo-white.svg');
     updateLogo('.auth-main.v1 .auth-sidefooter img', '/build/images/logo-white.svg');
     updateLogo('.footer-top .footer-logo', '/build/images/logo-white.svg');
+    // Update login page logo to purple version for dark theme
+    updateLogo('#login-logo', '/build/images/xidhiidhiye-logo-purple.svg');
 
     // Update active button state for dark theme
     updateActiveButton('.theme-layout .btn[data-value="false"]');
@@ -265,6 +267,8 @@ function layout_change(layout, skipSave) {
     updateLogo('.navbar-brand .logo-lg', '/build/images/logo-dark.svg');
     updateLogo('.auth-main.v1 .auth-sidefooter img', '/build/images/logo-dark.svg');
     updateLogo('.footer-top .footer-logo', '/build/images/logo-dark.svg');
+    // Update login page logo to green version for light theme
+    updateLogo('#login-logo', '/build/images/xidhiidhiye-logo.svg');
 
     // Update active button state for light theme
     updateActiveButton('.theme-layout .btn[data-value="true"]');
@@ -347,11 +351,4 @@ function change_box_container(value) {
         activeBtn.classList.remove('active');
       }
       var newActiveBtn = document.querySelector('.theme-container .btn[data-value="false"]');
-      if (newActiveBtn) {
-        newActiveBtn.classList.add('active');
-      }
-    }
-  }
-}
-
-// ----------    new setup end   ------------
+      i

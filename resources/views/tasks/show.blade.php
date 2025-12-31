@@ -2,6 +2,22 @@
 
 @section('title', 'Task Details')
 
+@section('css')
+<style>
+  /* Task title styling for light mode */
+  [data-pc-theme="light"] .task-title {
+    color: #000000 !important;
+    font-weight: bold !important;
+  }
+  
+  /* Task title styling for dark mode - white color */
+  [data-pc-theme="dark"] .task-title {
+    color: #ffffff !important;
+    font-weight: bold !important;
+  }
+</style>
+@endsection
+
 @section('content')
 
 <x-breadcrumb item="Tasks" active="Details"/>
@@ -16,7 +32,7 @@
               <div class="card-body">
                 <div class="row">
                   <div class="col-md-6">
-                    <p><strong>Title:</strong> <span style="color: #92CF01; font-weight: 500;">{{ $task->title }}</span></p>
+                    <p><strong>Title:</strong> <span class="task-title">{{ $task->title }}</span></p>
                     <p><strong>Description:</strong> {{ $task->description ?? 'N/A' }}</p>
                     <p><strong>Priority:</strong> 
                       <span class="badge bg-light-{{ $task->priority === 'High' ? 'danger' : ($task->priority === 'Medium' ? 'warning' : 'success') }}">
