@@ -78,8 +78,19 @@ class ManagerDashboardController extends Controller
         $recentQuestions = Question::with(['creator', 'team'])->latest()->take(5)->get();
         
         // Recent tasks
+        // Order: Completed tasks at bottom, then by priority (High > Medium > Normal), then by most recent
         $recentTasks = Task::with(['creator', 'assignee'])
-            ->latest()
+            ->orderByRaw("CASE 
+                WHEN status = 'Completed' THEN 2 
+                ELSE 1 
+            END")
+            ->orderByRaw("CASE 
+                WHEN priority = 'High' THEN 1 
+                WHEN priority = 'Medium' THEN 2 
+                WHEN priority = 'Normal' THEN 3 
+                ELSE 4 
+            END")
+            ->orderBy('created_at', 'desc')
             ->take(5)
             ->get();
         

@@ -57,9 +57,20 @@ class EmployeeDashboardController extends Controller
             ->where('status', '!=', 'Completed')->count();
         
         // Get recent tasks (last 5)
+        // Order: Completed tasks at bottom, then by priority (High > Medium > Normal), then by most recent
         $recentTasks = (clone $userTaskQuery)
             ->with(['creator', 'assignee'])
-            ->latest()
+            ->orderByRaw("CASE 
+                WHEN status = 'Completed' THEN 2 
+                ELSE 1 
+            END")
+            ->orderByRaw("CASE 
+                WHEN priority = 'High' THEN 1 
+                WHEN priority = 'Medium' THEN 2 
+                WHEN priority = 'Normal' THEN 3 
+                ELSE 4 
+            END")
+            ->orderBy('created_at', 'desc')
             ->take(5)
             ->get();
         

@@ -26,20 +26,57 @@ class TaskController extends Controller
         // Apply scoped queries based on role
         if ($user->isManager()) {
             // Manager sees all tasks
-            $tasks = $query->latest()->paginate(15);
+            // Order: Completed tasks at bottom, then by priority (High > Medium > Normal), then by most recent
+            $tasks = $query->orderByRaw("CASE 
+                WHEN status = 'Completed' THEN 2 
+                ELSE 1 
+            END")
+            ->orderByRaw("CASE 
+                WHEN priority = 'High' THEN 1 
+                WHEN priority = 'Medium' THEN 2 
+                WHEN priority = 'Normal' THEN 3 
+                ELSE 4 
+            END")
+            ->orderBy('created_at', 'desc')
+            ->paginate(15);
             // Get statistics for managers/leads widget
             $totalTasks = Task::count();
             $completedTasks = Task::where('status', 'Completed')->count();
             $completionPercentage = $totalTasks > 0 ? round(($completedTasks / $totalTasks) * 100) : 0;
-            $recentTasks = Task::with(['creator', 'assignee'])->latest()->take(5)->get();
+            $recentTasks = Task::with(['creator', 'assignee'])
+                ->orderByRaw("CASE 
+                    WHEN status = 'Completed' THEN 2 
+                    ELSE 1 
+                END")
+                ->orderByRaw("CASE 
+                    WHEN priority = 'High' THEN 1 
+                    WHEN priority = 'Medium' THEN 2 
+                    WHEN priority = 'Normal' THEN 3 
+                    ELSE 4 
+                END")
+                ->orderBy('created_at', 'desc')
+                ->take(5)->get();
         } elseif ($user->isTeamLead() && $user->team_id) {
             // Team Lead sees tasks from their team
             $teamMemberIds = User::where('team_id', $user->team_id)->pluck('id');
+            // Order: Completed tasks at bottom, then by priority (High > Medium > Normal), then by most recent
             $tasks = $query->where(function($q) use ($teamMemberIds, $user) {
                 $q->whereIn('assignee_id', $teamMemberIds)
                   ->orWhereIn('creator_id', $teamMemberIds)
                   ->orWhere('creator_id', $user->id);
-            })->latest()->paginate(15);
+            })
+            ->orderByRaw("CASE 
+                WHEN status = 'Completed' THEN 2 
+                ELSE 1 
+            END")
+            ->orderByRaw("CASE 
+                WHEN priority = 'High' THEN 1 
+                WHEN priority = 'Medium' THEN 2 
+                WHEN priority = 'Normal' THEN 3 
+                ELSE 4 
+            END")
+            ->orderBy('created_at', 'desc')
+            ->paginate(15);
             // Get statistics for managers/leads widget
             $teamTaskQuery = Task::where(function($q) use ($teamMemberIds, $user) {
                 $q->whereIn('assignee_id', $teamMemberIds)
@@ -57,23 +94,52 @@ class TaskController extends Controller
                 $q->whereIn('assignee_id', $teamMemberIds)
                   ->orWhereIn('creator_id', $teamMemberIds)
                   ->orWhere('creator_id', $user->id);
-            })->latest()->take(5)->get();
+            })
+            ->orderByRaw("CASE 
+                WHEN status = 'Completed' THEN 2 
+                ELSE 1 
+            END")
+            ->orderByRaw("CASE 
+                WHEN priority = 'High' THEN 1 
+                WHEN priority = 'Medium' THEN 2 
+                WHEN priority = 'Normal' THEN 3 
+                ELSE 4 
+            END")
+            ->orderBy('created_at', 'desc')
+            ->take(5)->get();
         } elseif ($user->isIntern()) {
             // Intern sees only their own tasks
+            // Order: Completed tasks at bottom, then by priority (High > Medium > Normal), then by most recent
             $tasks = $query->where(function($q) use ($user) {
                 $q->where('assignee_id', $user->id)
                   ->orWhere('creator_id', $user->id);
-            })->latest()->paginate(15);
+            })
+            ->orderByRaw("CASE 
+                WHEN status = 'Completed' THEN 2 
+                ELSE 1 
+            END")
+            ->orderByRaw("CASE 
+                WHEN priority = 'High' THEN 1 
+                WHEN priority = 'Medium' THEN 2 
+                WHEN priority = 'Normal' THEN 3 
+                ELSE 4 
+            END")
+            ->orderBy('created_at', 'desc')
+            ->paginate(15);
             // For normal users, get their tasks for the "My Task" widget
-            // Order by status: Pending first, then In_Progress, then Completed
-            // Within each status, order by most recent first
+            // Order: Completed tasks at bottom, then by priority (High > Medium > Normal), then by most recent
             $userTasks = Task::with(['creator', 'assignee'])->where(function($q) use ($user) {
                 $q->where('assignee_id', $user->id)
                   ->orWhere('creator_id', $user->id);
-            })->orderByRaw("CASE 
-                WHEN status = 'Pending' THEN 1 
-                WHEN status = 'In_Progress' THEN 2 
-                WHEN status = 'Completed' THEN 3 
+            })
+            ->orderByRaw("CASE 
+                WHEN status = 'Completed' THEN 2 
+                ELSE 1 
+            END")
+            ->orderByRaw("CASE 
+                WHEN priority = 'High' THEN 1 
+                WHEN priority = 'Medium' THEN 2 
+                WHEN priority = 'Normal' THEN 3 
                 ELSE 4 
             END")
             ->orderBy('created_at', 'desc')
@@ -81,20 +147,37 @@ class TaskController extends Controller
             return view('tasks.index', compact('tasks', 'userTasks'));
         } else {
             // Employee sees their own tasks
+            // Order: Completed tasks at bottom, then by priority (High > Medium > Normal), then by most recent
             $tasks = $query->where(function($q) use ($user) {
                 $q->where('assignee_id', $user->id)
                   ->orWhere('creator_id', $user->id);
-            })->latest()->paginate(15);
+            })
+            ->orderByRaw("CASE 
+                WHEN status = 'Completed' THEN 2 
+                ELSE 1 
+            END")
+            ->orderByRaw("CASE 
+                WHEN priority = 'High' THEN 1 
+                WHEN priority = 'Medium' THEN 2 
+                WHEN priority = 'Normal' THEN 3 
+                ELSE 4 
+            END")
+            ->orderBy('created_at', 'desc')
+            ->paginate(15);
             // For normal users, get their tasks for the "My Task" widget
-            // Order by status: Pending first, then In_Progress, then Completed
-            // Within each status, order by most recent first
+            // Order: Completed tasks at bottom, then by priority (High > Medium > Normal), then by most recent
             $userTasks = Task::with(['creator', 'assignee'])->where(function($q) use ($user) {
                 $q->where('assignee_id', $user->id)
                   ->orWhere('creator_id', $user->id);
-            })->orderByRaw("CASE 
-                WHEN status = 'Pending' THEN 1 
-                WHEN status = 'In_Progress' THEN 2 
-                WHEN status = 'Completed' THEN 3 
+            })
+            ->orderByRaw("CASE 
+                WHEN status = 'Completed' THEN 2 
+                ELSE 1 
+            END")
+            ->orderByRaw("CASE 
+                WHEN priority = 'High' THEN 1 
+                WHEN priority = 'Medium' THEN 2 
+                WHEN priority = 'Normal' THEN 3 
                 ELSE 4 
             END")
             ->orderBy('created_at', 'desc')
