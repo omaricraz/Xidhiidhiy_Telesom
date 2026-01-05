@@ -2,27 +2,6 @@
 
 use Illuminate\Support\Str;
 
-// #region agent log
-$logPath = __DIR__ . '/../../.cursor/debug.log';
-$logData = [
-    'sessionId' => 'debug-session',
-    'runId' => 'run1',
-    'hypothesisId' => 'A',
-    'location' => 'config/database.php:5',
-    'message' => 'Database config loading - env values',
-    'data' => [
-        'DB_CONNECTION' => env('DB_CONNECTION', 'NOT_SET'),
-        'DB_HOST' => env('DB_HOST', 'NOT_SET'),
-        'DB_PORT' => env('DB_PORT', 'NOT_SET'),
-        'DB_DATABASE' => env('DB_DATABASE', 'NOT_SET'),
-        'DB_USERNAME' => env('DB_USERNAME', 'NOT_SET'),
-        'DB_PASSWORD' => env('DB_PASSWORD') ? 'SET' : 'NOT_SET',
-    ],
-    'timestamp' => time() * 1000,
-];
-file_put_contents($logPath, json_encode($logData) . "\n", FILE_APPEND);
-// #endregion
-
 return [
 
     /*
@@ -37,25 +16,7 @@ return [
     |
     */
 
-    'default' => (function() use ($logPath) {
-        // #region agent log
-        $defaultConn = env('DB_CONNECTION', 'sqlite');
-        $logData = [
-            'sessionId' => 'debug-session',
-            'runId' => 'run1',
-            'hypothesisId' => 'C',
-            'location' => 'config/database.php:19',
-            'message' => 'Default database connection resolved',
-            'data' => [
-                'connection' => $defaultConn,
-                'is_default' => env('DB_CONNECTION') === null,
-            ],
-            'timestamp' => time() * 1000,
-        ];
-        file_put_contents($logPath, json_encode($logData) . "\n", FILE_APPEND);
-        // #endregion
-        return $defaultConn;
-    })(),
+    'default' => env('DB_CONNECTION', 'sqlite'),
 
     /*
     |--------------------------------------------------------------------------
@@ -86,25 +47,7 @@ return [
             'url' => env('DB_URL'),
             'host' => env('DB_HOST', '127.0.0.1'),
             'port' => env('DB_PORT', '3306'),
-            'database' => (function() use ($logPath) {
-                // #region agent log
-                $dbName = env('DB_DATABASE', 'laravel');
-                $logData = [
-                    'sessionId' => 'debug-session',
-                    'runId' => 'run1',
-                    'hypothesisId' => 'B',
-                    'location' => 'config/database.php:50',
-                    'message' => 'MySQL database name resolved',
-                    'data' => [
-                        'database_name' => $dbName,
-                        'is_default' => env('DB_DATABASE') === null,
-                    ],
-                    'timestamp' => time() * 1000,
-                ];
-                file_put_contents($logPath, json_encode($logData) . "\n", FILE_APPEND);
-                // #endregion
-                return $dbName;
-            })(),
+            'database' => env('DB_DATABASE', 'laravel'),
             'username' => env('DB_USERNAME', 'root'),
             'password' => env('DB_PASSWORD', ''),
             'unix_socket' => env('DB_SOCKET', ''),
