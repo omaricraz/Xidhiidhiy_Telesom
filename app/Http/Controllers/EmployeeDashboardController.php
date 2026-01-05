@@ -53,7 +53,7 @@ class EmployeeDashboardController extends Controller
             ->where('status', '!=', 'Completed')->count();
         $mediumPriorityCount = (clone $userTaskQuery)->where('priority', 'Medium')
             ->where('status', '!=', 'Completed')->count();
-        $lowPriorityCount = (clone $userTaskQuery)->where('priority', 'Low')
+        $lowPriorityCount = (clone $userTaskQuery)->where('priority', 'Normal')
             ->where('status', '!=', 'Completed')->count();
         
         // Get recent tasks (last 5)

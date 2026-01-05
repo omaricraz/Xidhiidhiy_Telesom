@@ -213,7 +213,7 @@
                         <i class="ti ti-info-circle f-24 text-info"></i>
                       </div>
                       <h4 class="mb-0">{{ $lowPriorityCount }}</h4>
-                      <small class="text-muted">Low Priority</small>
+                      <small class="text-muted">Normal Priority</small>
                     </div>
                   </div>
                 </div>
@@ -361,7 +361,7 @@
               type: 'donut',
               height: 250
             },
-            labels: ['High Priority', 'Medium Priority', 'Low Priority'],
+            labels: ['High Priority', 'Medium Priority', 'Normal Priority'],
             colors: ['#dc3545', '#ffc107', '#17a2b8'],
             legend: {
               position: 'bottom'
